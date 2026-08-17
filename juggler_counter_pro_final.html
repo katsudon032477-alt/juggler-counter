@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<title>ジャグラー実戦カウンター Pro 最終改良版 Pro v4</title>
+<style>
+:root{--bg:#f6f3ed;--navy:#4f5d55;--blue:#7d9b91;--green:#8fa88a;--orange:#c99a72;--red:#b98484;--muted:#7f8781;--line:#e3ded4;--card:#fffdf9}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--navy);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+.wrap{max-width:760px;margin:auto;padding:14px 12px 50px}
+h1{font-size:25px;margin:8px 4px 14px}
+h2{font-size:21px;margin:0 0 12px}
+h3{font-size:16px;margin:12px 0 7px}
+.card{position:relative;z-index:1;background:var(--card);border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 3px 16px rgba(92,82,65,.08)}
+.note{background:#eef3ef;border-left:7px solid var(--green);padding:12px;border-radius:14px;font-size:13px;line-height:1.65}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+label{display:block;font-weight:800;font-size:12px;margin:0 0 6px}
+input,select{position:relative;z-index:5;width:100%;border:2px solid var(--line);border-radius:14px;padding:13px 12px;font-size:19px;color:var(--navy);background:#fffdf9;outline:none}
+input:focus,select:focus{border-color:var(--blue)}
+button{position:relative;z-index:5;cursor:pointer;touch-action:manipulation;border:0;border-radius:14px;padding:13px 14px;font-weight:900;font-size:15px;color:white;background:var(--navy);min-height:48px;box-shadow:0 2px 5px rgba(79,93,85,.10)}
+button:active{transform:scale(.97)}
+.btn-blue{background:var(--blue)} .btn-green{background:var(--green)} .btn-orange{background:var(--orange)} .btn-red{background:var(--red)} .btn-light{background:#eeeae2;color:var(--navy)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.metric{background:#f5f8fb;border-radius:16px;padding:13px;text-align:center}
+.metric .v{font-size:25px;font-weight:900;margin-top:3px}
+.metric .k{font-size:12px;font-weight:800;color:var(--muted)}
+.bigmetric{background:#eef3ef;border-radius:18px;padding:18px;text-align:center}
+.bigmetric .v{font-size:38px;font-weight:950}
+.bigmetric .k{font-size:13px;font-weight:800}
+.plusgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.counter{display:grid;grid-template-columns:64px 1fr 64px;gap:8px;align-items:center;margin:8px 0}
+.counter button{font-size:27px;padding:0;height:58px}
+.counter .num{text-align:center;font-size:30px;font-weight:950}
+.counter .name{grid-column:1/-1;font-size:13px;font-weight:900;margin-bottom:-5px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border-bottom:1px solid var(--line);padding:8px 4px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+.tabbar{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.tabbar button{background:#eeeae2;color:var(--navy)}
+.tabbar button.active{background:var(--navy);color:#fff}
+.hidden{display:none!important}
+.status{padding:12px;border-radius:14px;background:#f5f8fb;font-weight:800}
+.good{background:#eef9e8;border-left:6px solid var(--green)} .warn{background:#fff6e8;border-left:6px solid var(--orange)}
+.small{font-size:12px;color:var(--muted);line-height:1.6}
+.history-item{border:1px solid var(--line);border-radius:15px;padding:12px;margin:8px 0;background:#fff}
+.history-item strong{font-size:15px}
+.stars{letter-spacing:2px}
+@media(max-width:430px){.grid3{grid-template-columns:1fr 1fr} h1{font-size:23px}}
+</style>
+
+<style id="final-polish">
+.final-version-badge{display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:999px;background:#e8eee9;color:#50635a;font-size:12px;font-weight:800}
+#specTable table{width:100%;border-collapse:collapse;font-size:13px}
+#specTable th,#specTable td{padding:8px 5px;border-bottom:1px solid #e2e6e2;text-align:center;white-space:nowrap}
+#specTable th{font-weight:800}
+</style>
+</head>
+<body><div class="final-version-badge">ジャグラー実戦カウンター Pro｜最終改良版</div>
+<div class="wrap">
+<h1>🎰 ジャグラー実戦カウンター Pro <small>v4</small></h1>
+
+<div class="card" style="padding:12px 15px"><div class="small">🌿 今日の実戦 → 前任者 → 機種スペック → 保存履歴の順に、上からゆっくり入力できます。</div></div>
+
+<section id="play">
+<div class="card">
+<h2>機種・基本設定</h2>
+<div class="grid2">
+<div><label>機種</label><select id="model"></select></div>
+<div><label>現在G</label><input id="g" type="number" inputmode="numeric"></div>
+</div>
+<div class="plusgrid" style="margin-top:10px">
+<button type="button" class="btn-light" onclick="addG(1)">G +1</button>
+<button type="button" class="btn-light" onclick="addG(10)">G +10</button>
+<button type="button" class="btn-light" onclick="addG(50)">G +50</button>
+<button type="button" class="btn-light" onclick="addG(100)">G +100</button>
+</div>
+</div>
+
+<div class="card">
+<h2>🎯 ボーナス・小役</h2>
+<div class="counter"><div class="name">🔵 BIG</div><button type="button" class="btn-light" onclick="chg('big',-1)">−</button><div id="bigNum" class="num">—</div><button type="button" class="btn-blue" onclick="hitBonus('big')">＋</button></div>
+<div class="counter"><div class="name">🔴 REG</div><button type="button" class="btn-light" onclick="chg('reg',-1)">−</button><div id="regNum" class="num">—</div><button type="button" class="btn-red" onclick="hitBonus('reg')">＋</button></div>
+<div class="counter"><div class="name">🍇 ぶどう</div><button type="button" class="btn-light" onclick="chg('grape',-1)">−</button><div id="grapeNum" class="num">—</div><button type="button" class="btn-green" onclick="chg('grape',1)">＋</button></div>
+<div class="counter"><div class="name">🍒 チェリー</div><button type="button" class="btn-light" onclick="chg('cherry',-1)">−</button><div id="cherryNum" class="num">—</div><button type="button" class="btn-orange" onclick="chg('cherry',1)">＋</button></div>
+</div>
+
+<div class="card">
+<h2>💰 差枚・収支</h2>
+<div class="grid2">
+<div><label>現在差枚</label><input id="diff" type="number" inputmode="numeric"></div>
+<div><label>投資(円)</label><input id="invest" type="number" inputmode="numeric"></div>
+<div><label>回収(円)</label><input id="return" type="number" inputmode="numeric"></div>
+<div><label>台番号</label><input id="machine" type="text" placeholder="例 1111"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>📈 リアルタイム判定</h2>
+<div class="grid3">
+<div class="metric"><div class="k">BIG</div><div id="bigRate" class="v">—</div></div>
+<div class="metric"><div class="k">REG</div><div id="regRate" class="v">—</div></div>
+<div class="metric"><div class="k">合算</div><div id="combRate" class="v">—</div></div>
+<div class="metric"><div class="k">🍇実測</div><div id="grapeRate" class="v">—</div></div>
+<div class="metric"><div class="k">🍒実測</div><div id="cherryRate" class="v">—</div></div>
+<div class="metric"><div class="k">総当たり</div><div id="hits" class="v">0</div></div>
+</div>
+<div id="settingBox" class="status" style="margin-top:10px">データを入力すると設定推測を表示します。</div>
+</div>
+
+<div class="card">
+<h2>🍇 ぶどう逆算（差枚ベース）</h2>
+<div class="note">ぶどうを数えていなくても、G・BIG・REG・差枚から「簡易推定ぶどう」を計算します。公式シミュレーターの完全再現ではありません。公式結果を入力した場合は公式値を優先します。</div>
+<div style="margin-top:10px">
+<label>打ち方</label>
+<select id="style">
+<option value="random">適当打ち</option><option value="cherry">チェリー狙い</option><option value="full">完全技術介入</option>
+</select>
+</div>
+<div class="bigmetric" style="margin-top:10px"><div class="k">🍇 自動推定ぶどう</div><div id="autoGrape" class="v">—</div></div>
+<div style="margin-top:10px"><label>公式シミュレーター結果（入力したら優先）</label><input id="officialGrape" type="number" step="0.01" inputmode="decimal" placeholder="例 5.88"></div>
+<div class="small">※逆算値は統計的な目安。設定を保証するものではありません。</div>
+</div>
+
+<div class="card">
+<h2>💴 期待時給</h2>
+<div class="grid2">
+<div><label>時速(G/h) <span class="small">※空欄なら800G</span></label><input id="speed" type="number" placeholder="800" inputmode="numeric"></div>
+<div><label>50枚＝円 <span class="small">※空欄なら1000円</span></label><input id="yen50" type="number" placeholder="1000" inputmode="numeric"></div>
+</div>
+
+<div class="bigmetric" style="margin-top:12px">
+<div class="k">🎯 現在の入力から自動算出</div>
+<div id="autoEV" class="v">データを入力すると自動計算</div>
+</div>
+
+<div class="grid3" style="margin-top:10px">
+<div class="metric"><div class="k">設定1</div><div id="ev1" class="v">—</div></div>
+<div class="metric"><div class="k">設定2</div><div id="ev2" class="v">—</div></div>
+<div class="metric"><div class="k">設定3</div><div id="ev3" class="v">—</div></div>
+<div class="metric"><div class="k">設定4</div><div id="ev4" class="v">—</div></div>
+<div class="metric"><div class="k">設定5</div><div id="ev5" class="v">—</div></div>
+<div class="metric"><div class="k">設定6</div><div id="ev6" class="v">—</div></div>
+</div>
+
+<div class="small" style="margin-top:10px">
+現在G・BIG・REG・🍇など入力した実戦データから簡易推定した設定を使って、期待時給を自動で表示します。<br>
+無攻略＝公表出玉率、フル攻略＝完全技術介入時の出玉率。交換率は「50枚＝円」で変更できます。
+</div>
+</div>
+
+<div class="card">
+<h2>💾 実戦を保存</h2>
+<div class="grid2">
+<button type="button" class="btn-green" onclick="savePlay()">この台を保存</button>
+<button type="button" class="btn-light" onclick="resetPlay()">新しい台</button>
+</div>
+</div>
+</section>
+
+<section id="prev" style="margin-top:18px">
+<div class="card">
+<h2>👤 前任者データ</h2>
+<div class="note">前任者のぶどうは数えなくてOK。G・BIG・REG・差枚・チェリー狙いを入力すると、その場で簡易推定ぶどうを表示します。</div>
+<div class="grid2" style="margin-top:10px">
+<div><label>前任者G</label><input id="pG" type="number" inputmode="numeric"></div>
+<div><label>前任者BIG</label><input id="pB" type="number" inputmode="numeric"></div>
+<div><label>前任者REG</label><input id="pR" type="number" inputmode="numeric"></div>
+<div><label>前任者差枚</label><input id="pD" type="number" inputmode="numeric"></div>
+</div>
+<label style="margin-top:10px">チェリー狙い</label>
+<div class="grid2"><button type="button id="pRandom" class="btn-light" onclick="setPrevStyle('random')">OFF / 適当</button><button type="button id="pCherry" class="btn-blue" onclick="setPrevStyle('cherry')">ON / チェリー狙い</button></div>
+<div class="bigmetric" style="margin-top:12px"><div class="k">🍇 前任者・自動推定ぶどう</div><div id="pGrape" class="v">—</div></div>
+<div style="margin-top:10px"><label>公式シミュレーター結果（あれば入力）</label><input id="pOfficial" type="number" step="0.01" placeholder="例 5.88" inputmode="decimal"></div>
+<div class="grid2" style="margin-top:10px">
+<button type="button" class="btn-light" onclick="openSimulator()">公式ブドウシミュレーターを開く</button>
+<button type="button" class="btn-green" onclick="savePrev()">前任者データを保存</button>
+</div>
+<div id="prevSetting" class="status" style="margin-top:10px">入力すると前任者の目安を表示します。</div>
+</div>
+
+<div class="card">
+<h2>🔗 前任者＋自分</h2>
+<div class="grid3">
+<div class="metric"><div class="k">総G</div><div id="allG" class="v">0</div></div>
+<div class="metric"><div class="k">BIG</div><div id="allB" class="v">0</div></div>
+<div class="metric"><div class="k">REG</div><div id="allR" class="v">0</div></div>
+</div>
+<div class="grid3" style="margin-top:8px">
+<div class="metric"><div class="k">合算</div><div id="allC" class="v">—</div></div>
+<div class="metric"><div class="k">🍇前任</div><div id="allPG" class="v">—</div></div>
+<div class="metric"><div class="k">🍇自分</div><div id="allMG" class="v">—</div></div>
+</div>
+</div>
+</section>
+
+<section id="spec" style="margin-top:18px">
+<div class="card">
+<h2>📊 機種別スペック</h2><div class="small">設定1〜6の基準値を、機種ごとに確認できます。</div>
+<select id="specModel" onchange="renderSpec()"></select>
+<div id="specTable" style="overflow:auto;margin-top:10px"></div>
+</div>
+<div class="card">
+<h2>💡 この機種の見方</h2>
+<div id="specHint" class="small"></div>
+</div>
+</section>
+
+<div class="card">
+<h2>📚 保存履歴</h2>
+<div class="grid2"><button type="button" class="btn-light" onclick="renderHistory()">履歴を更新</button><button type="button" class="btn-red" onclick="clearHistory()">履歴を全部削除</button></div>
+<div id="history" style="margin-top:8px"></div>
+</div>
+
+<p class="small">データは端末のブラウザ（localStorage）に保存されます。ブラウザのデータ削除・端末変更では消える場合があります。設定推測・ぶどう逆算は参考値です。</p>
+</div>
+
+<script>
+const DATA = {"アイムジャグラーEX": {"bb": [273.1, 269.7, 269.7, 259.0, 259.0, 255.0], "rb": [439.8, 399.6, 331.0, 315.1, 255.0, 255.0], "comb": [168.5, 161.0, 148.6, 142.2, 128.5, 127.5], "grape": [6.02, 6.02, 6.02, 6.02, 6.02, 5.85], "payout": [97.0, 98.0, 99.5, 101.1, 103.3, 105.5], "cherry": [97.88, 99.0, 100.66, 102.43, 104.82, 106.66], "full": [98.61, 99.73, 101.39, 103.16, 105.55, 107.4]}, "ネオアイムジャグラーEX": {"bb": [273.1, 269.7, 269.7, 259.0, 259.0, 255.0], "rb": [439.8, 399.6, 331.0, 315.1, 255.0, 255.0], "comb": [168.5, 161.0, 148.6, 142.2, 128.5, 127.5], "grape": [6.02, 6.02, 6.02, 6.02, 6.02, 5.85], "payout": [97.0, 98.0, 99.5, 101.1, 103.3, 105.5], "cherry": [97.88, 99.0, 100.66, 102.43, 104.82, 106.66], "full": [98.61, 99.73, 101.39, 103.16, 105.55, 107.4]}, "マイジャグラーV": {"bb": [273.1, 270.8, 266.4, 254.0, 240.1, 229.1], "rb": [409.6, 385.5, 336.1, 290.0, 268.6, 229.1], "comb": [163.8, 159.1, 148.6, 135.4, 126.8, 114.6], "grape": [5.91, 5.87, 5.83, 5.8, 5.76, 5.67], "payout": [97.0, 98.0, 99.9, 102.8, 105.3, 109.4], "cherry": [97.79, 98.83, 100.92, 104.19, 107.24, 111.63], "full": [98.57, 99.61, 101.7, 104.98, 108.02, 112.41]}, "ファンキージャグラー2": {"bb": [266.4, 259.0, 256.0, 249.2, 240.1, 219.9], "rb": [439.8, 407.1, 366.1, 322.8, 299.3, 262.1], "comb": [165.9, 158.3, 150.7, 140.6, 133.2, 119.6], "grape": [5.94, 5.93, 5.88, 5.83, 5.8, 5.77], "payout": [97.0, 98.5, 99.8, 102.0, 104.3, 109.0], "cherry": [97.77, 99.29, 100.92, 103.33, 105.57, 110.37], "full": [98.5, 100.02, 101.65, 104.06, 106.3, 111.11]}, "ハッピージャグラーVⅢ": {"bb": [273.1, 270.8, 263.2, 254.0, 239.2, 226.0], "rb": [397.2, 362.1, 332.7, 300.6, 273.1, 256.0], "comb": [161.8, 154.9, 146.9, 137.7, 127.5, 120.0], "grape": [6.04, 6.01, 5.98, 5.86, 5.84, 5.82], "payout": [97.0, 98.1, 99.9, 102.9, 105.8, 108.4], "cherry": [97.56, 98.81, 100.67, 103.71, 106.89, 109.78], "full": [98.78, 100.03, 101.89, 104.93, 108.11, 111.0]}, "ゴーゴージャグラー3": {"bb": [259.0, 258.0, 257.0, 254.0, 247.3, 234.9], "rb": [354.2, 332.7, 306.2, 268.6, 247.3, 234.9], "comb": [149.6, 145.3, 139.7, 130.5, 123.7, 117.4], "grape": [6.25, 6.2, 6.15, 6.07, 6.0, 5.92], "payout": [97.2, 98.2, 99.4, 101.6, 103.8, 106.5], "cherry": [98.28, 99.34, 100.65, 103.06, 105.46, 108.46], "full": [99.02, 100.07, 101.38, 103.79, 106.2, 109.19]}, "ジャグラーガールズSS": {"bb": [273.1, 270.8, 260.1, 250.1, 243.6, 226.0], "rb": [381.0, 350.5, 316.6, 281.3, 270.8, 252.1], "comb": [159.1, 152.8, 142.8, 132.4, 128.3, 119.2], "grape": [6.01, 6.01, 6.01, 6.01, 5.92, 5.89], "payout": [97.0, 97.9, 99.9, 102.1, 104.0, 107.5], "cherry": [97.75, 98.73, 100.94, 103.44, 105.41, 109.1], "full": [98.48, 99.47, 101.68, 104.17, 106.15, 109.83]}, "ミスタージャグラー": {"bb": [268.6, 267.5, 260.1, 249.2, 240.9, 237.4], "rb": [374.5, 354.2, 331.0, 291.3, 257.0, 237.4], "comb": [156.4, 152.4, 145.6, 134.3, 124.4, 118.7], "grape": [6.24, 6.18, 6.14, 6.1, 6.06, 6.02], "payout": [97.0, 98.0, 99.8, 102.7, 105.5, 107.3], "cherry": [98.41, 99.43, 101.27, 104.22, 107.07, 108.91], "full": [99.47, 100.5, 102.34, 105.29, 108.14, 109.97]}, "ウルトラミラクルジャグラー": {"bb": [267.5, 261.1, 256.0, 242.7, 233.2, 216.3], "rb": [425.6, 402.1, 350.5, 322.8, 297.9, 277.7], "comb": [164.3, 158.3, 147.9, 138.6, 130.8, 121.6], "grape": [5.93, 5.93, 5.93, 5.93, 5.87, 5.81], "payout": [97.0, 98.1, 99.8, 102.1, 104.5, 108.1], "cherry": [97.9, 99.09, 100.92, 103.43, 105.65, 109.18], "full": [98.68, 99.87, 101.7, 104.21, 106.43, 109.96]}};
+const NAMES = Object.keys(DATA);
+const state = {big:0,reg:0,grape:0,cherry:0,prevStyle:'cherry'};
+
+const $ = id => document.getElementById(id);
+function fillSelect(id, selected='') {
+  const el=$(id); el.innerHTML=NAMES.map(n=>`<option ${n===selected?'selected':''}>${n}</option>`).join('');
+}
+fillSelect('model'); fillSelect('specModel');
+
+function num(id) { return Math.max(0, Number($(id).value)||0); }
+function rate(g,n) { return g>0 && n>0 ? '1/'+(g/n).toFixed(1) : '—'; }
+function addG(n) { $('g').value=num('g')+n; updateAll(); }
+function hitBonus(type) {
+  state[type]++; if(type==='big') $('g').value=num('g')+1; else $('g').value=num('g')+1;
+  updateAll();
+}
+function chg(type,n) { state[type]=Math.max(0,state[type]+n); updateAll(); }
+function resetPlay() {
+  $('g').value=''; ['big','reg','grape','cherry'].forEach(k=>state[k]=0);
+  ['diff','invest','return','machine','officialGrape'].forEach(id=>$(id).value='');
+  updateAll();
+}
+function getModel() { return DATA[$('model').value]; }
+
+function estimateGrape(g,b,r,diff,style) {
+  if(g<=0 || (b+r)<=0) return null;
+  // 差枚ベースの簡易逆算。公開されている一般的な逆算パラメータを使用。
+  const replay = 3/7.298;
+  let cherry = style==='random' ? 2/51.99 : 2/34.66;
+  let other = style==='random' ? (14/4608 + 10/10186) : (style==='full' ? (14/1024+10/1024) : 0);
+  const bonus = b*240 + r*96;
+  const known = g*replay + g*cherry + g*other + bonus;
+  const totalOut = g*3 + diff;
+  const grapeOut = totalOut - known;
+  const count = grapeOut / 7;
+  if(count<=0) return null;
+  return g/count;
+}
+function getGrapeOfficialOrAuto(g,b,r,diff,style,official) {
+  return official>0 ? official : estimateGrape(g,b,r,diff,style);
+}
+
+function closestSetting(m, bRate, rRate, grape) {
+  let scores = m.bb.map((_,i)=>0);
+  for(let i=0;i<6;i++) {
+    if(bRate) scores[i]+=Math.abs(1/bRate - 1/m.bb[i])*2;
+    if(rRate) scores[i]+=Math.abs(1/rRate - 1/m.rb[i])*2;
+    if(grape) scores[i]+=Math.abs(grape-m.grape[i])*4;
+  }
+  return scores.indexOf(Math.min(...scores))+1;
+}
+function updateAll() {
+  const g=num('g'), b=state.big, r=state.reg, c=b+r;
+  $('bigNum').textContent=b||'—'; $('regNum').textContent=r||'—'; $('grapeNum').textContent=state.grape||'—'; $('cherryNum').textContent=state.cherry||'—';
+  $('bigRate').textContent=rate(g,b); $('regRate').textContent=rate(g,r); $('combRate').textContent=rate(g,c);
+  $('grapeRate').textContent=rate(g,state.grape); $('cherryRate').textContent=rate(g,state.cherry); $('hits').textContent=c;
+  const style=$('style').value, official=num('officialGrape');
+  const ag=getGrapeOfficialOrAuto(g,b,r,num('diff'),style,official);
+  $('autoGrape').textContent=ag?('1/'+ag.toFixed(2)):'—';
+  const m=getModel();
+  const br=b>0?g/b:null, rr=r>0?g/r:null;
+  const s=(g>0 && c>0)?closestSetting(m,br,rr,ag):null;
+  $('settingBox').innerHTML=s?`推定設定：<b>設定${s}</b>（BIG・REG・🍇を総合した簡易判定）`:'データを入力すると設定推測を表示します。';
+  updateEV();
+  updatePrev();
+  renderSpecIfNeeded();
+}
+function updateEV() {
+  const m=getModel();
+  const speed=num('speed')||800;
+  const y=num('yen50')||1000;
+
+  // 全設定の理論時給を表示
+  for(let setting=1;setting<=6;setting++){
+    const i=setting-1;
+    const no=(3*speed*(m.payout[i]/100-1))*y/50;
+    const full=(3*speed*(m.full[i]/100-1))*y/50;
+    const noText=`無 ${no>=0?'+':''}${Math.round(no).toLocaleString()}円`;
+    const fullText=`完 ${full>=0?'+':''}${Math.round(full).toLocaleString()}円`;
+    $('ev'+setting).innerHTML=`${noText}<br><small>${fullText}</small>`;
+  }
+
+  // 現在の入力データから推定設定を出して、その設定の時給を自動採用
+  const g=num('g'), b=state.big, r=state.reg;
+  const official=num('officialGrape');
+  const style=$('style').value;
+  const ag=getGrapeOfficialOrAuto(g,b,r,num('diff'),style,official);
+  let setting=null;
+
+  if(g>0 && (b+r)>0){
+    const br=b>0?g/b:null;
+    const rr=r>0?g/r:null;
+    setting=closestSetting(m,br,rr,ag);
+  }
+
+  if(setting){
+    const i=setting-1;
+    const no=(3*speed*(m.payout[i]/100-1))*y/50;
+    const full=(3*speed*(m.full[i]/100-1))*y/50;
+    $('autoEV').innerHTML=`設定<b>${setting}</b>目安　無攻略 <b>${no>=0?'+':''}${Math.round(no).toLocaleString()}円/h</b>　｜　フル攻略 <b>${full>=0?'+':''}${Math.round(full).toLocaleString()}円/h</b>`;
+  }else{
+    $('autoEV').textContent='BIG・REG・現在Gなどを入力すると自動計算';
+  }
+}
+function setPrevStyle(s) { state.prevStyle=s; $('pCherry').className=s==='cherry'?'btn-blue':'btn-light'; $('pRandom').className=s==='random'?'btn-blue':'btn-light'; updatePrev(); }
+function updatePrev() {
+  const g=num('pG'), b=num('pB'), r=num('pR'), d=num('pD'), off=num('pOfficial');
+  const ag=getGrapeOfficialOrAuto(g,b,r,d,state.prevStyle,off);
+  $('pGrape').textContent=ag?('1/'+ag.toFixed(2)):'—';
+  const m=getModel(), s=(g>0&&(b+r)>0)?closestSetting(m,b?g/b:null,r?g/r:null,ag):null;
+  $('prevSetting').innerHTML=s?`前任者の目安：<b>設定${s}付近</b>（参考）`:'入力すると前任者の目安を表示します。';
+  $('allG').textContent=(g+num('g')).toLocaleString();
+  $('allB').textContent=b+state.big; $('allR').textContent=r+state.reg;
+  const all=g+num('g'), hits=b+r+state.big+state.reg;
+  $('allC').textContent=all&&hits?'1/'+(all/hits).toFixed(1):'—';
+  $('allPG').textContent=ag?('1/'+ag.toFixed(2)):'—';
+  const mg=getGrapeOfficialOrAuto(num('g'),state.big,state.reg,num('diff'),$('style').value,num('officialGrape'));
+  $('allMG').textContent=mg?('1/'+mg.toFixed(2)):'—';
+}
+function savePrev() {
+  const item={type:'prev',date:new Date().toLocaleString('ja-JP'),model:$('model').value,g:num('pG'),big:num('pB'),reg:num('pR'),diff:num('pD'),grape:$('pOfficial').value||$('pGrape').textContent};
+  const h=JSON.parse(localStorage.getItem('jugglerHistory')||'[]'); h.unshift(item); localStorage.setItem('jugglerHistory',JSON.stringify(h.slice(0,100))); renderHistory(); alert('前任者データを保存したよ！');
+}
+function savePlay() {
+  const g=num('g'), b=state.big, r=state.reg, ag=getGrapeOfficialOrAuto(g,b,r,num('diff'),$('style').value,num('officialGrape'));
+  const item={type:'play',date:new Date().toLocaleString('ja-JP'),model:$('model').value,machine:$('machine').value,g,big:b,reg:r,grape:ag?ag.toFixed(2):'—',cherry:state.cherry,diff:num('diff'),invest:num('invest'),return:num('return'),comb:g&&(b+r)?(g/(b+r)).toFixed(1):'—'};
+  const h=JSON.parse(localStorage.getItem('jugglerHistory')||'[]'); h.unshift(item); localStorage.setItem('jugglerHistory',JSON.stringify(h.slice(0,100))); renderHistory(); alert('実戦データを保存したよ！');
+}
+function renderHistory() {
+  const h=JSON.parse(localStorage.getItem('jugglerHistory')||'[]');
+  $('history').innerHTML=h.length?h.map((x,i)=>`<div class="history-item"><strong>${x.type==='play'?'🎮':'👤'} ${x.model} ${x.machine?(' #'+x.machine):''}</strong><div class="small">${x.date}<br>${x.g?.toLocaleString?.()||x.g}G / BIG ${x.big||0} / REG ${x.reg||0} / 合算 ${x.comb||'—'} / 🍇 ${x.grape||'—'} / 差枚 ${x.diff??'—'}</div></div>`).join(''):'<div class="small">まだ保存データはありません。</div>';
+}
+function clearHistory() { if(confirm('履歴を全部削除する？')) {localStorage.removeItem('jugglerHistory');renderHistory();} }
+function showTab(t) {
+  ['play','prev','spec'].forEach(x=>$(x).classList.toggle('hidden',x!==t));
+  ['tabPlay','tabPrev','tabSpec'].forEach(x=>$(x).classList.remove('active'));
+  $('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
+  if(t==='spec') renderSpec();
+}
+function renderSpec() {
+  const select=$('specModel'), table=$('specTable'), hint=$('specHint');
+  if(!select || !table || !hint) return;
+  const name=select.value || NAMES[0];
+  if(!select.value) select.value=name;
+  const m=DATA[name];
+  if(!m) {
+    table.innerHTML='<div class="small">機種データを読み込めませんでした。</div>';
+    hint.textContent='';
+    return;
+  }
+  let rows='<tr><th>設定</th><th>BIG</th><th>REG</th><th>合算</th><th>🍇ぶどう</th><th>公表出玉率</th><th>フル攻略</th></tr>';
+  for(let i=0;i<6;i++){
+    rows+=`<tr><td>${i+1}</td><td>1/${Number(m.bb[i]).toFixed(1)}</td><td>1/${Number(m.rb[i]).toFixed(1)}</td><td>1/${Number(m.comb[i]).toFixed(1)}</td><td>1/${Number(m.grape[i]).toFixed(2)}</td><td>${Number(m.payout[i]).toFixed(1)}%</td><td>${Number(m.full[i]).toFixed(2)}%</td></tr>`;
+  }
+  table.innerHTML='<table>'+rows+'</table>';
+  hint.innerHTML=`<b>${name}</b><br>設定1〜6のBIG・REG・合算・ぶどう確率と出玉率を表示しています。<br>※数値は機種・解析情報の基準値。実戦では小役やボーナスにブレがあります。`;
+}
+function renderSpecIfNeeded() { renderSpec(); }
+function openSimulator() { window.open('https://kenslo65536.com/tool/calc-juggler6-kitaichi-list.html','_blank'); }
+
+document.querySelectorAll('input[type=number]').forEach(el=>{
+  el.addEventListener('focus',()=>{ if(el.value==='0') el.value=''; });
+  el.addEventListener('input',updateAll);
+});
+$('model').addEventListener('change',updateAll); $('style').addEventListener('change',updateAll); $('officialGrape').addEventListener('input',updateAll);
+['pG','pB','pR','pD','pOfficial'].forEach(id=>$(id).addEventListener('input',updatePrev));
+['speed','yen50'].forEach(id=>$(id).addEventListener('input',updateEV));
+
+$('prev').classList.remove('hidden'); $('spec').classList.remove('hidden');
+renderSpec();
+renderHistory();
+updateAll();
+setPrevStyle('cherry');
+</script>
+
+<script id="final-input-fix">
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('input[type="number"]').forEach(function (el) {
+    el.setAttribute('inputmode','decimal');
+    el.addEventListener('focus', function () {
+      if (el.value === '0') {
+        el.select();
+      }
+    });
+  });
+
+  const specSelect = document.getElementById('specModel');
+  if (specSelect) {
+    // If the original script has already populated the options, keep them.
+    // Otherwise populate from the global NAMES array when available.
+    if (specSelect.options.length === 0 && Array.isArray(window.NAMES)) {
+      window.NAMES.forEach(function(name) {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        specSelect.appendChild(opt);
+      });
+    }
+    if (typeof window.renderSpec === 'function') {
+      window.renderSpec();
+    }
+    specSelect.addEventListener('change', function () {
+      if (typeof window.renderSpec === 'function') window.renderSpec();
+    });
+  }
+});
+</script>
+<script>try{window.renderSpec=renderSpec;}catch(e){}</script></body>
+</html>
