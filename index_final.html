@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6f8f82">
+<title>ジャグラー実戦カウンター Pro 最終版</title>
+<style>
+:root{
+  --bg:#f4f1e9;--card:#fffdf8;--ink:#42534d;--muted:#7d8a84;
+  --green:#789b8f;--red:#bd8585;--grape:#91aa83;--cherry:#c99a6b;
+  --blue:#8ba6bd;--line:#d9ddd7;--soft:#eef2ee;--shadow:0 5px 18px #0000000c
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+.wrap{max-width:620px;margin:auto;padding:16px 14px 50px}
+h1{font-size:25px;margin:8px 0 16px} h2{font-size:20px;margin:0 0 13px}
+.card{background:var(--card);border:1px solid #ebe7dc;border-radius:24px;padding:18px;margin:14px 0;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-weight:800;font-size:13px;margin:2px 0 6px}
+input,select{width:100%;min-height:52px;border:2px solid var(--line);border-radius:16px;background:#fffefb;color:var(--ink);font-size:19px;padding:10px 13px;outline:none}
+input:focus,select:focus{border-color:var(--green)}
+button{border:0;border-radius:16px;min-height:54px;padding:10px 14px;font-weight:900;font-size:17px;color:#fff;background:var(--green);touch-action:manipulation}
+button:active{transform:scale(.98)}
+.btnrow{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px}
+.btnrow button{background:#e9eee9;color:var(--ink);font-size:15px}
+.counter{display:grid;grid-template-columns:62px 1fr 62px;gap:12px;align-items:center;margin:10px 0}
+.counter .num{text-align:center;font-size:32px;font-weight:900;min-width:0}
+.minus{background:#e9e5dc;color:var(--ink)} .plus{background:var(--green)}
+.reg .plus{background:var(--red)} .grape .plus{background:var(--grape)} .cherry .plus{background:var(--cherry)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--soft);border-radius:18px;padding:13px;text-align:center}
+.kpi b{display:block;font-size:25px;margin-top:5px}
+.note{background:#eef4ef;border-left:6px solid var(--green);border-radius:16px;padding:12px 14px;line-height:1.6;font-size:14px}
+.result{font-size:30px;font-weight:900;text-align:center;padding:12px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.save{width:100%;margin-top:10px}
+.danger{background:#c38a8a}
+details{border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px;background:#fffefb}
+summary{font-weight:900;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}th{font-weight:900}
+@media(max-width:430px){.grid{gap:9px}.btnrow{grid-template-columns:1fr 1fr}.counter{grid-template-columns:58px 1fr 58px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🎰 ジャグラー実戦カウンター Pro</h1>
+
+<div class="card">
+<h2>🎯 機種・ゲーム数</h2>
+<div class="grid">
+<div><label>機種</label><select id="machine"></select></div>
+<div><label>現在G</label><input id="g" type="number" inputmode="numeric" min="0" placeholder="0"></div>
+</div>
+<div class="btnrow">
+<button onclick="addG(1)">G +1</button><button onclick="addG(10)">G +10</button>
+<button onclick="addG(50)">G +50</button><button onclick="addG(100)">G +100</button>
+</div>
+</div>
+
+<div class="card">
+<h2>🎯 ボーナス・小役</h2>
+<div class="counter"><button class="minus" onclick="chg('big',-1)">−</button><div class="num" id="big">0</div><button class="plus" onclick="chg('big',1)">＋</button></div>
+<div class="small">🔵 BIG</div>
+<div class="counter reg"><button class="minus" onclick="chg('reg',-1)">−</button><div class="num" id="reg">0</div><button class="plus" onclick="chg('reg',1)">＋</button></div>
+<div class="small">🔴 REG</div>
+<div class="counter grape"><button class="minus" onclick="chg('grape',-1)">−</button><div class="num" id="grape">0</div><button class="plus" onclick="chg('grape',1)">＋</button></div>
+<div class="small">🍇 ぶどう</div>
+<div class="counter cherry"><button class="minus" onclick="chg('cherry',-1)">−</button><div class="num" id="cherry">0</div><button class="plus" onclick="chg('cherry',1)">＋</button></div>
+<div class="small">🍒 チェリー</div>
+</div>
+
+<div class="card">
+<h2>📊 現在の実戦値</h2>
+<div class="kpis">
+<div class="kpi">合算<b id="combined">—</b></div>
+<div class="kpi">🍇 自分<b id="myGrape">—</b></div>
+<div class="kpi">BIG<b id="bigRate">—</b></div>
+<div class="kpi">REG<b id="regRate">—</b></div>
+</div>
+</div>
+
+<div class="card">
+<h2>👤 前任者</h2>
+<div class="note">前任者の🍇ぶどうは数えなくてOK。ゲーム数・BIG・REG・差枚・チェリー狙いを入力すると、簡易推定を表示します。公式シミュレーターの結果を入力した場合は、その値を優先します。</div>
+<div class="grid" style="margin-top:12px">
+<div><label>前任者G</label><input id="pg" type="number" inputmode="numeric" placeholder="例 3000"></div>
+<div><label>前任者BIG</label><input id="pbig" type="number" inputmode="numeric" placeholder="例 12"></div>
+<div><label>前任者REG</label><input id="preg" type="number" inputmode="numeric" placeholder="例 15"></div>
+<div><label>前任者差枚</label><input id="pcoin" type="number" inputmode="numeric" placeholder="例 +800"></div>
+</div>
+<div style="margin-top:12px"><label>チェリー狙い</label>
+<div class="grid"><button id="chOff" onclick="setCherry(false)" style="background:#8b9a93">OFF</button><button id="chOn" onclick="setCherry(true)" style="background:#e7ebe7;color:var(--ink)">ON</button></div></div>
+<div class="result" id="autoGrape">🍇 自動推定ぶどう確率<br>—</div>
+<div><label>公式シミュレーター結果（入力時はこちらを優先）</label><input id="official" type="number" step="0.01" inputmode="decimal" placeholder="例 5.88"></div>
+<button class="save" onclick="savePrev()">前任者データを保存</button>
+</div>
+
+<div class="card">
+<h2>💰 差枚・収支</h2>
+<div class="grid">
+<div><label>現在差枚</label><input id="coins" type="number" inputmode="numeric" placeholder="例 +1200"></div>
+<div><label>投資(円)</label><input id="invest" type="number" inputmode="numeric" placeholder="例 5000"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>⏱️ 期待時給</h2>
+<div class="note">設定推定をもとに、機械割の目安から1時間あたりの期待値を簡易計算します。交換率・通常時の打ち方・目押し精度などで実際の時給は変わります。</div>
+<div class="kpis" style="margin-top:12px">
+<div class="kpi">無攻略・目安<b id="hourNormal">—</b></div>
+<div class="kpi">フル攻略・目安<b id="hourFull">—</b></div>
+</div>
+<p class="small">計算基準：3,000G/時 × 50枚/1,000円 × (機械割−100%)。入力データがない場合は表示しません。</p>
+</div>
+
+<div class="card">
+<h2>📈 機種別スペック</h2>
+<select id="specMachine" onchange="renderSpec()"></select>
+<div id="spec" style="margin-top:12px"></div>
+</div>
+
+<div class="card">
+<h2>💡 この機種の見方</h2>
+<div id="how" class="small"></div>
+</div>
+
+<div class="card">
+<h2>📚 保存履歴</h2>
+<button class="save" onclick="saveSession()">現在の台を打ち終わりデータとして保存</button>
+<div id="history"></div>
+<button class="save danger" onclick="clearHistory()">履歴を全部削除</button>
+</div>
+
+<div class="card small">
+データはこのiPhoneのブラウザ内（localStorage）に保存されます。ブラウザのデータを消すと履歴も消える場合があります。🍇ぶどうの前任者推定は参考値です。
+</div>
+</div>
+
+<script>
+const machines={
+"ゴーゴージャグラー3":{rates:[{b:1/259,r:1/354},{b:1/258,r:1/332},{b:1/257,r:1/306},{b:1/254,r:1/268},{b:1/247,r:1/247},{b:1/234,r:1/234}],grape:"約5.9",full:103.8,normal:97.0},
+"マイジャグラーV":{rates:[{b:1/273.1,r:1/409.6},{b:1/270.8,r:1/385.5},{b:1/266.4,r:1/336.1},{b:1/254,r:1/315.1},{b:1/240.9,r:1/273.1},{b:1/229.1,r:1/229.1}],grape:"約5.7",full:109.4,normal:97.0},
+"アイムジャグラーEX":{rates:[{b:1/273.1,r:1/439.8},{b:1/269.7,r:1/399.6},{b:1/269.7,r:1/331},{b:1/259,r:1/315.1},{b:1/259,r:1/255},{b:1/255,r:1/255}],grape:"約6.0",full:105.5,normal:97.0},
+"ファンキージャグラー2":{rates:[{b:1/266.4,r:1/439.8},{b:1/259,r:1/407},{b:1/256,r:1/372},{b:1/249,r:1/336},{b:1/240.9,r:1/299},{b:1/219.9,r:1/262.1}],grape:"約5.7",full:109.0,normal:97.0},
+"ハッピージャグラーV III":{rates:[{b:1/273.1,r:1/397.2},{b:1/270.8,r:1/364.1},{b:1/263.2,r:1/336.1},{b:1/256,r:1/306.2},{b:1/240.9,r:1/273.1},{b:1/226.2,r:1/256}],grape:"約5.8",full:108.4,normal:97.0},
+"ジャグラーガールズSS":{rates:[{b:1/273.1,r:1/381},{b:1/270.8,r:1/350.5},{b:1/263.2,r:1/316.6},{b:1/252.1,r:1/290},{b:1/240.9,r:1/270.8},{b:1/239.2,r:1/286.2}],grape:"約5.8",full:107.5,normal:97.0},
+"ミスタージャグラー":{rates:[{b:1/268.6,r:1/374.5},{b:1/267.5,r:1/354.2},{b:1/260.1,r:1/332.7},{b:1/249.2,r:1/297.9},{b:1/240.9,r:1/273.1},{b:1/219.9,r:1/269.7}],grape:"約5.8",full:108.6,normal:97.0},
+"ネオアイムジャグラーEX":{rates:[{b:1/273.1,r:1/439.8},{b:1/269.7,r:1/399.6},{b:1/269.7,r:1/331},{b:1/259,r:1/315.1},{b:1/259,r:1/255},{b:1/255,r:1/255}],grape:"約6.0",full:105.5,normal:97.0}
+};
+
+let state={big:0,reg:0,grape:0,cherry:0,cherryAim:false};
+const $=id=>document.getElementById(id);
+function fillSelect(id){$(id).innerHTML=Object.keys(machines).map(x=>`<option>${x}</option>`).join("")}
+fillSelect("machine");fillSelect("specMachine");
+$("machine").onchange=()=>{renderSpec();update()};
+["g","pg","pbig","preg","pcoin","coins","invest","official"].forEach(id=>$(id).addEventListener("input",update));
+function val(id){let n=parseFloat($(id).value);return Number.isFinite(n)?n:0}
+function addG(n){$("g").value=val("g")+n;update()}
+function chg(k,n){state[k]=Math.max(0,state[k]+n);$(k).textContent=state[k];update()}
+function setCherry(on){state.cherryAim=on;$("chOff").style.background=on?"#e7ebe7":"#8b9a93";$("chOff").style.color=on?"var(--ink)":"#fff";$("chOn").style.background=on?"#8b9a93":"#e7ebe7";$("chOn").style.color=on?"#fff":"var(--ink)";update()}
+function ratio(n,d){return n&&d?`1/${Math.round(d/n)}`:"—"}
+function estimateGrape(){
+ let g=val("pg"),b=val("pbig"),r=val("preg"),c=state.cherryAim;
+ if(!g) return null;
+ let hits=b+r, bonusRate=hits/g;
+ let base=c?5.75:5.85;
+ let adj=(bonusRate-1/140)*120;
+ return Math.max(5.45,Math.min(6.20,base-adj)).toFixed(2);
+}
+function update(){
+ const g=val("g"), b=state.big, r=state.reg;
+ $("combined").textContent=(g&&b+r)?ratio(b+r,g):"—";
+ $("bigRate").textContent=ratio(b,g);$("regRate").textContent=ratio(r,g);
+ $("myGrape").textContent=(g&&state.grape)?`1/${(g/state.grape).toFixed(2)}`:"—";
+ let est=estimateGrape(), official=val("official");
+ $("autoGrape").innerHTML=`🍇 自動推定ぶどう確率<br><strong>${official?official.toFixed(2):est?est:"—"}</strong>${official?"（公式入力を優先）":"（簡易推定）"}`;
+ calcHourly();
+}
+function calcHourly(){
+ const m=machines[$("machine").value], g=val("g"), b=state.big,r=state.reg;
+ const official=val("official");
+ // 何も入力していない間は期待時給を表示しない。
+ const hasData = g>0 || b>0 || r>0 || official>0;
+ if(!hasData){
+   $("hourNormal").textContent="—";
+   $("hourFull").textContent="—";
+   return;
+ }
+ let obs=(g&&b+r)?Math.min(6,Math.max(1,(b/g)/(1/160)+(r/g)/(1/300))):3;
+ let setting=Math.max(1,Math.min(6,Math.round(obs)));
+ const sp=m.rates[setting-1];
+ const normalHour=Math.round((m.normal-100)*30);
+ const fullHour=Math.round((m.full-100)*30);
+ const factor=(1/(sp.b+sp.r))/(1/160);
+ $("hourNormal").textContent=`${Math.round(normalHour*factor).toLocaleString()}円/h`;
+ $("hourFull").textContent=`${Math.round(fullHour*factor).toLocaleString()}円/h`;
+}
+function renderSpec(){
+ const m=machines[$("specMachine").value];
+ let rows=m.rates.map((x,i)=>`<tr><td>設定${i+1}</td><td>1/${Math.round(1/x.b)}</td><td>1/${Math.round(1/x.r)}</td><td>1/${Math.round(1/(x.b+x.r))}</td></tr>`).join("");
+ $("spec").innerHTML=`<table><tr><th>設定</th><th>BIG</th><th>REG</th><th>合算</th></tr>${rows}</table>
+ <p class="small">🍇 ぶどう公表・基準値目安：${m.grape}<br>期待時給目安（機械割ベース）：無攻略 約${Math.round((m.normal-100)*30).toLocaleString()}円/h、フル攻略 約${Math.round((m.full-100)*30).toLocaleString()}円/h。交換率・打ち方等で変動します。</p>`;
+ $("how").innerHTML=`${$("specMachine").value}は、BIG/REGの確率だけでなく、🍇ぶどう・REGの強さ・現在G数をまとめて見るのがおすすめ。<br>前任者データは前任者欄、自分が回した分は実戦欄に分けて入力すると、打ち終わり履歴にも残せます。`;
+}
+function savePrev(){localStorage.setItem("juggler_prev",JSON.stringify({g:val("pg"),big:val("pbig"),reg:val("preg"),coin:$("pcoin").value,official:$("official").value,cherry:state.cherryAim,machine:$("machine").value}));alert("前任者データを保存したよ！")}
+function saveSession(){
+ let item={date:new Date().toLocaleString("ja-JP"),machine:$("machine").value,g:val("g"),big:state.big,reg:state.reg,grape:state.grape,cherry:state.cherry,coins:$("coins").value,invest:$("invest").value,grapeRate:(val("g")&&state.grape?(val("g")/state.grape).toFixed(2):"")};
+ let arr=JSON.parse(localStorage.getItem("juggler_history")||"[]");arr.unshift(item);localStorage.setItem("juggler_history",JSON.stringify(arr));renderHistory();alert("打ち終わりデータを保存したよ！")}
+function renderHistory(){
+ let arr=JSON.parse(localStorage.getItem("juggler_history")||"[]");
+ $("history").innerHTML=arr.length?arr.slice(0,20).map(x=>`<details><summary>${x.date}｜${x.machine}</summary><div class="small">G ${x.g}｜BIG ${x.big}｜REG ${x.reg}｜🍇 ${x.grape}｜🍒 ${x.cherry}<br>差枚 ${x.coins||"—"}｜投資 ${x.invest||"—"}｜ぶどう 1/${x.grapeRate||"—"}</div></details>`).join(""):"<p class='small'>まだ保存データなし</p>";
+}
+function clearHistory(){if(confirm("履歴を全部削除する？")){localStorage.removeItem("juggler_history");renderHistory()}}
+renderHistory();renderSpec();update();
+</script>
+</body>
+</html>
