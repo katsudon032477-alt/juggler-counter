@@ -2,176 +2,215 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>ジャグラー実戦カウンター</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17324d">
+<title>ジャグラー実戦カウンター Pro</title>
 <style>
-:root{--bg:#f3f6f9;--navy:#17324d;--blue:#2f75b5;--green:#70ad47;--red:#c55a5a;--orange:#e67e55;--gray:#8ba1b2}
+:root{--navy:#17324d;--blue:#2f75b5;--green:#68ad43;--orange:#e98655;--red:#c65d5d;--gray:#8ea1b2;--bg:#f3f6f9;--card:#fff;--text:#17324d}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--navy);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif}
-.wrap{max-width:540px;margin:auto;padding:10px 12px 30px}
-h1{font-size:22px;margin:5px 0 10px}
-.card{background:#fff;border-radius:18px;padding:13px;margin:9px 0;box-shadow:0 2px 10px #00000010}
-.top{display:grid;grid-template-columns:1.15fr .85fr;gap:9px}
-label{font-size:12px;font-weight:800;display:block;margin-bottom:5px}
-input,select{width:100%;border:1px solid #d5dce3;border-radius:11px;padding:11px;font-size:17px;background:#fff;color:var(--navy)}
-.current{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.bigCurrent{font-size:30px;font-weight:900;text-align:center;background:#eef5fb;border-radius:12px;padding:10px}
-.smallCurrent{font-size:18px;font-weight:800;text-align:center;background:#f7f8f9;border-radius:12px;padding:10px}
-.counter{display:grid;grid-template-columns:62px 1fr 62px;align-items:center;gap:9px}
-.num{text-align:center;font-size:43px;font-weight:900}
-button{border:0;border-radius:15px;min-height:60px;font-size:30px;font-weight:900;color:#fff;touch-action:manipulation}
-button:active{transform:scale(.94)}
-.minus{background:var(--gray)}
-.grape .plus{background:var(--green)}
-.cherry .plus{background:var(--orange)}
-.big .plus{background:var(--blue)}
-.reg .plus{background:var(--red)}
-.rateGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.stat{background:#f6f8fa;border-radius:11px;padding:9px}
-.stat b{display:block;font-size:11px;color:#6c7884}.stat span{font-size:18px;font-weight:900}
-.save{width:100%;background:var(--navy);font-size:18px;margin-top:9px}
-.secondary{width:100%;background:#8a9aa8;font-size:15px;min-height:45px;margin-top:7px}
-.history{max-height:270px;overflow:auto}
-.hit{display:grid;grid-template-columns:52px 1fr 65px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #eee;font-size:14px}
-.badge{color:#fff;border-radius:9px;padding:5px;text-align:center;font-weight:900}
-.badge.big{background:var(--blue)}.badge.reg{background:var(--red)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.actions button{font-size:14px;min-height:45px;background:#6f8190}
-.msg{text-align:center;min-height:20px;font-weight:800;margin-top:7px}
-.note{font-size:11px;color:#73808c;line-height:1.55}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif}
+.wrap{max-width:560px;margin:auto;padding:12px 12px 36px}
+h1{font-size:23px;margin:4px 4px 12px}
+h2{font-size:18px;margin:0 0 10px}
+.card{background:var(--card);border-radius:20px;padding:14px;margin:10px 0;box-shadow:0 3px 16px #17324d12}
+.grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:10px}
+label{font-size:12px;font-weight:800;display:block;margin:0 0 5px}
+input,select{width:100%;border:2px solid #d5dce3;border-radius:15px;padding:14px 12px;font-size:18px;background:#fff;color:var(--text);min-height:54px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:#eef5fc;border-radius:16px;padding:13px;text-align:center}
+.kpi:nth-child(2){background:#f8f8f8}
+.kpi b{display:block;font-size:27px;margin-top:2px}
+.kpi span{font-size:12px;font-weight:800}
+.counter{display:grid;grid-template-columns:72px 1fr 72px;align-items:center;gap:8px}
+.counter .num{text-align:center;font-size:40px;font-weight:900;line-height:1}
+.btn{border:0;border-radius:16px;min-height:66px;font-size:36px;font-weight:900;color:#fff;touch-action:manipulation}
+.minus{background:var(--gray)} .grape{background:var(--green)} .cherry{background:var(--orange)} .big{background:#347dbd}.reg{background:var(--red)}
+.smallbtn{border:0;border-radius:13px;min-height:46px;padding:0 13px;font-weight:800;background:#e9eef3;color:var(--navy)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px}
+.quick .smallbtn{font-size:13px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:#f7f9fb;border-radius:14px;padding:10px}.stat b{display:block;font-size:20px}.stat small{font-weight:700;color:#647789}
+.expect{border-radius:16px;padding:14px;background:#f7f9fb;border-left:7px solid var(--gray)}
+.expect strong{font-size:22px}.expect p{margin:5px 0 0;font-size:12px;line-height:1.55}
+.bar{height:10px;background:#e7edf2;border-radius:99px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:var(--blue);width:0}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{min-height:50px;border:0;border-radius:14px;font-weight:800;background:#e9eef3;color:var(--navy)}
+details{margin-top:8px}.history{max-height:260px;overflow:auto}.row{padding:9px 0;border-bottom:1px solid #e5ebf0;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.note{font-size:11px;color:#6d7e8e;line-height:1.55}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#17324d;color:white;padding:11px 16px;border-radius:99px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:10}.toast.show{opacity:1}
+@media(max-width:380px){.counter{grid-template-columns:62px 1fr 62px}.btn{font-size:30px}.quick{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>🎰 ジャグラー実戦カウンター</h1>
+<h1>🎰 ジャグラー実戦カウンター Pro</h1>
 
-<div class="card top">
-<div><label>機種</label><select id="machine">
-<option>ゴーゴージャグラー</option><option>マイジャグラー</option><option>ファンキージャグラー</option>
-<option>ネオアイムジャグラー</option><option>ハッピージャグラー</option><option>ジャグラーガールズ</option>
-</select></div>
-<div><label>現在G</label><input id="games" type="number" min="0" inputmode="numeric" value="0"></div>
-</div>
+<section class="card">
+  <div class="grid2">
+    <div><label>機種</label><select id="machine"></select></div>
+    <div><label>現在G</label><input id="g" type="number" inputmode="numeric" min="0" value="0"></div>
+  </div>
+  <div class="quick">
+    <button class="smallbtn" data-g="1">G +1</button>
+    <button class="smallbtn" data-g="10">G +10</button>
+    <button class="smallbtn" data-g="50">G +50</button>
+    <button class="smallbtn" data-g="100">G +100</button>
+  </div>
+</section>
 
-<div class="card current">
-<div class="bigCurrent"><small>現在G</small><br><span id="gView">0</span>G</div>
-<div class="smallCurrent"><small>当たり合計</small><br><span id="hitView">0</span>回</div>
-</div>
+<section class="card">
+  <div class="kpis">
+    <div class="kpi"><span>現在G</span><b id="kg">0G</b></div>
+    <div class="kpi"><span>当たり合計</span><b id="hits">0回</b></div>
+  </div>
+</section>
 
-<div class="card grape">
-<label>🍇 ぶどう</label>
-<div class="counter"><button class="minus" onclick="add('grape',-1)">−</button><div class="num" id="grape">0</div><button class="plus" onclick="add('grape',1)">＋</button></div>
+<section class="card">
+<h2>🍇 ぶどう</h2>
+<div class="counter">
+<button class="btn minus" data-counter="grape" data-d="-1">−</button><div class="num" id="grape">0</div><button class="btn grape" data-counter="grape" data-d="1">＋</button>
 </div>
+</section>
 
-<div class="card cherry">
-<label>🍒 チェリー</label>
-<div class="counter"><button class="minus" onclick="add('cherry',-1)">−</button><div class="num" id="cherry">0</div><button class="plus" onclick="add('cherry',1)">＋</button></div>
+<section class="card">
+<h2>🍒 チェリー</h2>
+<div class="counter">
+<button class="btn minus" data-counter="cherry" data-d="-1">−</button><div class="num" id="cherry">0</div><button class="btn cherry" data-counter="cherry" data-d="1">＋</button>
 </div>
+</section>
 
-<div class="card big">
-<label>🔵 BIG — 押すと現在Gを記録</label>
-<div class="counter"><button class="minus" onclick="add('big',-1)">−</button><div class="num" id="big">0</div><button class="plus" onclick="hit('BIG')">＋</button></div>
+<section class="card">
+<h2>🔵 BIG <span class="note">— 押すと現在Gを記録</span></h2>
+<div class="counter">
+<button class="btn minus" data-counter="big" data-d="-1">−</button><div class="num" id="big">0</div><button class="btn big" data-hit="big">＋</button>
 </div>
+</section>
 
-<div class="card reg">
-<label>🔴 REG — 押すと現在Gを記録</label>
-<div class="counter"><button class="minus" onclick="add('reg',-1)">−</button><div class="num" id="reg">0</div><button class="plus" onclick="hit('REG')">＋</button></div>
+<section class="card">
+<h2>🔴 REG <span class="note">— 押すと現在Gを記録</span></h2>
+<div class="counter">
+<button class="btn minus" data-counter="reg" data-d="-1">−</button><div class="num" id="reg">0</div><button class="btn reg" data-hit="reg">＋</button>
 </div>
+</section>
 
-<div class="card">
-<div class="rateGrid">
-<div class="stat"><b>合算</b><span id="combined">—</span></div>
-<div class="stat"><b>BIG確率</b><span id="bigRate">—</span></div>
-<div class="stat"><b>REG確率</b><span id="regRate">—</span></div>
-<div class="stat"><b>🍇 ぶどう</b><span id="grapeRate">—</span></div>
-<div class="stat"><b>🍒 チェリー</b><span id="cherryRate">—</span></div>
-<div class="stat"><b>当たり間隔</b><span id="lastGap">—</span></div>
+<section class="card">
+<h2>📊 自動判定</h2>
+<div class="stats">
+<div class="stat"><small>合算</small><b id="combined">—</b></div>
+<div class="stat"><small>BIG確率</small><b id="bigRate">—</b></div>
+<div class="stat"><small>REG確率</small><b id="regRate">—</b></div>
+<div class="stat"><small>ぶどう</small><b id="grapeRate">—</b></div>
+<div class="stat"><small>チェリー</small><b id="cherryRate">—</b></div>
+<div class="stat"><small>1G当たり</small><b id="hitRate">—</b></div>
 </div>
-</div>
+<div class="bar"><i id="scorebar"></i></div>
+<div class="expect" id="expect"><strong>期待度：データ不足</strong><p>まず総回転とBIG/REGを入れると簡易判定します。</p></div>
+</section>
 
-<div class="card">
-<label>当たり履歴（現在Gを自動記録）</label>
-<div id="history" class="history"></div>
+<section class="card">
+<h2>⏱️ 直近の当たり</h2>
+<div class="stats">
+<div class="stat"><small>前回から</small><b id="lastGap">—</b></div>
+<div class="stat"><small>前回G</small><b id="lastHitG">—</b></div>
 </div>
+<div id="eventList" class="history"></div>
+</section>
 
-<div class="card">
-<button class="save" onclick="saveCSV()">💾 実戦データを保存</button>
+<section class="card">
+<h2>💾 実戦データ</h2>
 <div class="actions">
-<button onclick="undoHit()">↩️ 直前の当たり取消</button>
-<button onclick="resetAll()">🗑️ 実戦リセット</button>
+<button id="save">この実戦を保存</button>
+<button id="reset">新しい実戦</button>
+<button id="export">履歴を書き出す</button>
+<button id="clear">履歴を全削除</button>
 </div>
-<div id="msg" class="msg"></div>
+<details><summary>保存履歴を見る</summary><div id="history" class="history"></div></details>
+<p class="note">データはこのiPhoneのブラウザ内に保存します。GitHub側には実戦データを送信しません。</p>
+</section>
 </div>
-
-<div class="card note">
-🍇🍒は出現したら「＋」。BIG/REGは当たった瞬間に「＋」。<br>
-BIG/REGは押した時点の現在Gを自動記録します。<br>
-途中データは端末内に自動保存されるので、画面を閉じても残ります。
-</div>
-</div>
+<div id="toast" class="toast"></div>
 
 <script>
-const KEY='juggler_v3';
-let s=JSON.parse(localStorage.getItem(KEY)||'null')||{
- machine:'ゴーゴージャグラー',games:0,big:0,reg:0,grape:0,cherry:0,hits:[]
+const profiles={
+"ゴーゴージャグラー":{"b":1/259,"r":1/354,"c":1/149,"r6":1/234},
+"マイジャグラー":{"b":1/273,"r":1/409,"c":1/168,"r6":1/229},
+"ファンキージャグラー":{"b":1/266,"r":1/439,"c":1/165,"r6":1/219},
+"ハッピージャグラー":{"b":1/273,"r":1/397,"c":1/161,"r6":1/225},
+"ネオアイムジャグラー":{"b":1/273,"r":1/439,"c":1/168,"r6":1/250},
+"ジャグラーガールズ":{"b":1/273,"r":1/364,"c":1/160,"r6":1/220},
+"ミスタージャグラー":{"b":1/268,"r":1/374,"c":1/157,"r6":1/220}
 };
+const state={machine:"ゴーゴージャグラー",g:0,grape:0,cherry:0,big:0,reg:0,lastHitG:null,events:[]};
 const $=id=>document.getElementById(id);
+const machines=Object.keys(profiles);
+machines.forEach(m=>{let o=document.createElement("option");o.value=m;o.textContent=m; $("machine").appendChild(o)});
+$("machine").value=state.machine;
 
-function persist(){localStorage.setItem(KEY,JSON.stringify(s))}
-function add(k,n){s[k]=Math.max(0,(s[k]||0)+n);persist();render()}
-$('games').addEventListener('input',e=>{s.games=Math.max(0,Number(e.target.value)||0);persist();render()});
-$('machine').addEventListener('change',e=>{s.machine=e.target.value;persist()});
-
-function hit(type){
- const g=s.games;
- s[type==='BIG'?'big':'reg']++;
- s.hits.push({type,g,time:new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'})});
- persist();render();
-}
-function undoHit(){
- if(!s.hits.length)return;
- const h=s.hits.pop();
- if(h.type==='BIG')s.big=Math.max(0,s.big-1);else s.reg=Math.max(0,s.reg-1);
- persist();render();
-}
-function rate(n){return s.games&&n?'1/'+(s.games/n).toFixed(2):'—'}
+function rate(n,d){return n&&d?`1/${Math.round(d/n)}`:"—"}
+function toast(t){$("toast").textContent=t;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1200)}
+function saveLocal(){localStorage.setItem("jugglerPro",JSON.stringify(state))}
 function render(){
- $('machine').value=s.machine;
- $('games').value=s.games;
- $('gView').textContent=s.games;
- $('big').textContent=s.big;$('reg').textContent=s.reg;
- $('grape').textContent=s.grape;$('cherry').textContent=s.cherry;
- $('hitView').textContent=s.big+s.reg;
- $('combined').textContent=s.games&&(s.big+s.reg)?'1/'+(s.games/(s.big+s.reg)).toFixed(1):'—';
- $('bigRate').textContent=rate(s.big);$('regRate').textContent=rate(s.reg);
- $('grapeRate').textContent=rate(s.grape);$('cherryRate').textContent=rate(s.cherry);
- const h=s.hits; const last=h.length?h[h.length-1].g:null;
- $('lastGap').textContent=h.length>=2?(last-h[h.length-2].g)+'G':'—';
- $('history').innerHTML=h.slice().reverse().map((x,i)=>
- `<div class="hit"><span class="badge ${x.type==='BIG'?'big':'reg'}">${x.type}</span><b>${x.g}G</b><span>${x.time}</span></div>`
- ).join('') || '<div class="note">まだ当たり履歴なし</div>';
-}
-function saveCSV(){
- if(!s.games){msg('総回転を入れてね');return}
- const rows=[
- ['日付',new Date().toLocaleDateString('ja-JP'),'機種',s.machine],
- ['総回転',s.games,'BIG',s.big,'REG',s.reg,'ぶどう',s.grape,'チェリー',s.cherry],
- ['合算',s.games/(s.big+s.reg||1),'BIG確率',s.games/(s.big||1),'REG確率',s.games/(s.reg||1),'ぶどう確率',s.games/(s.grape||1),'チェリー確率',s.games/(s.cherry||1)],
- [],
- ['当たり種別','現在G','時刻'],
- ...s.hits.map(x=>[x.type,x.g,x.time])
- ];
- const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');
- const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='juggler_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
- msg('CSVを保存したよ');
-}
-function resetAll(){
- if(confirm('この実戦のカウンターを全部リセットしますか？')){
-  s={machine:s.machine,games:0,big:0,reg:0,grape:0,cherry:0,hits:[]};persist();render();msg('');
+ $("kg").textContent=state.g+"G"; $("g").value=state.g;
+ ["grape","cherry","big","reg"].forEach(k=>$(k).textContent=state[k]);
+ $("hits").textContent=(state.big+state.reg)+"回";
+ $("combined").textContent=rate(state.big+state.reg,state.g);
+ $("bigRate").textContent=rate(state.big,state.g);
+ $("regRate").textContent=rate(state.reg,state.g);
+ $("grapeRate").textContent=rate(state.grape,state.g);
+ $("cherryRate").textContent=rate(state.cherry,state.g);
+ $("hitRate").textContent=state.g?`1/${Math.round(state.g/(state.big+state.reg||1))}`:"—";
+ if(state.lastHitG!==null){$("lastHitG").textContent=state.lastHitG+"G";$("lastGap").textContent=(state.g-state.lastHitG)+"G"}else{$("lastHitG").textContent="—";$("lastGap").textContent="—"}
+ const p=profiles[state.machine];
+ let score=0;
+ if(state.g>=500){
+   const comb=state.g/(state.big+state.reg||1);
+   const rr=state.g/(state.reg||1);
+   const bScore=Math.max(0,Math.min(100,(p.c*100)/Math.max(1,comb)*50));
+   const rScore=Math.max(0,Math.min(100,(p.r*100)/Math.max(1,rr)*50));
+   score=Math.round(bScore*.35+rScore*.65);
  }
+ $("scorebar").style.width=score+"%";
+ let label="期待度：データ不足",msg="総回転500G以上から簡易判定します。REGを重視し、合算も合わせて見ます。";
+ if(state.g>=500){
+   if(score>=78){label="期待度：🟢 高め";msg="REG・合算がかなり良好。高設定候補として追う価値あり。ただし単独で設定6確定ではありません。"}
+   else if(score>=60){label="期待度：🟢 やや高め";msg="良い数値。ぶどうも併せて確認し、グラフ・店の傾向と合わせて判断。"}
+   else if(score>=42){label="期待度：🟡 中間域";msg="まだブレる範囲。1000〜2000G以上までREGと合算の推移を見る。"}
+   else {label="期待度：🔴 低め";msg="現時点では弱め。店の根拠がなければ台移動も候補。"}
+ }
+ $("expect").innerHTML=`<strong>${label}</strong><p>${msg}</p>`;
+ $("eventList").innerHTML=state.events.slice().reverse().map(e=>`<div class="row"><span>${e.type==="big"?"🔵 BIG":"🔴 REG"} ${e.g}G</span><b>${e.gap==null?"—":"前回+"+e.gap+"G"}</b></div>`).join("");
 }
-function msg(t){$('msg').textContent=t;setTimeout(()=>{if($('msg').textContent===t)$('msg').textContent=''},2200)}
-render();
+function hit(type){
+ const gap=state.lastHitG===null?null:state.g-state.lastHitG;
+ state[type]++; state.lastHitG=state.g; state.events.push({type,g:state.g,gap});
+ saveLocal();render();toast(type==="big"?"BIGを記録":"REGを記録");
+}
+document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{state.g+=+b.dataset.g;saveLocal();render()});
+$("g").oninput=()=>{state.g=Math.max(0,parseInt($("g").value||0));saveLocal();render()};
+$("machine").onchange=()=>{state.machine=$("machine").value;saveLocal();render()};
+document.querySelectorAll("[data-counter]").forEach(b=>b.onclick=()=>{
+ const k=b.dataset.counter; state[k]=Math.max(0,state[k]+(+b.dataset.d)); saveLocal();render()
+});
+document.querySelectorAll("[data-hit]").forEach(b=>b.onclick=()=>hit(b.dataset.hit));
+
+$("save").onclick=()=>{
+ const item={date:new Date().toLocaleString("ja-JP"),...state};
+ const h=JSON.parse(localStorage.getItem("jugglerHistory")||"[]");h.unshift(item);localStorage.setItem("jugglerHistory",JSON.stringify(h));renderHistory();toast("実戦を保存しました")
+};
+$("reset").onclick=()=>{
+ if(!confirm("現在の実戦をリセットしますか？（保存済み履歴は残ります）"))return;
+ Object.assign(state,{g:0,grape:0,cherry:0,big:0,reg:0,lastHitG:null,events:[]});saveLocal();render();toast("新しい実戦です")
+};
+function renderHistory(){
+ const h=JSON.parse(localStorage.getItem("jugglerHistory")||"[]");
+ $("history").innerHTML=h.length?h.map((x,i)=>`<div class="row"><span>${x.date}<br>${x.machine}　${x.g}G　BIG${x.big} REG${x.reg}</span><b>${rate(x.big+x.reg,x.g)}</b></div>`).join(""):"まだ履歴なし";
+}
+$("clear").onclick=()=>{if(confirm("保存履歴を全部削除しますか？")){localStorage.removeItem("jugglerHistory");renderHistory();toast("履歴を削除しました")}};
+$("export").onclick=()=>{
+ const h=localStorage.getItem("jugglerHistory")||"[]";
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([h],{type:"application/json"}));a.download="juggler-history.json";a.click()
+};
+const old=JSON.parse(localStorage.getItem("jugglerPro")||"null"); if(old)Object.assign(state,old);
+$("machine").value=state.machine;render();renderHistory();
 </script>
 </body>
 </html>
